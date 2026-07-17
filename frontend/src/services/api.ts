@@ -34,7 +34,11 @@ class ApiService {
     this.api.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
-        const originalRequest = error.config as any;
+        interface AxiosRequestConfig extends Record<string, unknown> {
+          _retry?: boolean;
+          headers?: { Authorization?: string };
+        }
+        const originalRequest = error.config as AxiosRequestConfig;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
@@ -48,7 +52,9 @@ class ApiService {
             const { token } = response.data.data;
             localStorage.setItem('token', token);
 
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
             return this.api(originalRequest);
           } catch (refreshError) {
             useAuthStore.getState().logout();
@@ -65,7 +71,7 @@ class ApiService {
   /**
    * Authentication Endpoints
    */
-  async register(data: any) {
+  async register(data: Record<string, unknown>) {
     return this.api.post('/auth/register', data);
   }
 
@@ -77,7 +83,7 @@ class ApiService {
     return this.api.get('/auth/profile');
   }
 
-  async updateProfile(data: any) {
+  async updateProfile(data: Record<string, unknown>) {
     return this.api.put('/auth/profile', data);
   }
 
@@ -117,7 +123,7 @@ class ApiService {
     return this.api.get(`/appointments/doctors/${doctorId}`);
   }
 
-  async bookAppointment(data: any) {
+  async bookAppointment(data: Record<string, unknown>) {
     return this.api.post('/appointments/book', data);
   }
 
@@ -156,7 +162,7 @@ class ApiService {
   /**
    * Health Endpoints
    */
-  async createHealthRecord(data: any) {
+  async createHealthRecord(data: Record<string, unknown>) {
     return this.api.post('/health/records', data);
   }
 

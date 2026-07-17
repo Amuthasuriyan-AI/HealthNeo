@@ -118,17 +118,17 @@ export interface HealthRecord {
     heartRate?: number;
     temperature?: number;
     bmi?: number;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   notes?: string;
   attachmentUrl?: string;
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   message: string;
   data?: T;
-  error?: any;
+  error?: Record<string, unknown>;
   statusCode: number;
 }
 

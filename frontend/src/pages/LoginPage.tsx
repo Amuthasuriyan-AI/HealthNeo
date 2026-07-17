@@ -25,7 +25,7 @@ export const LoginPage: React.FC = () => {
     try {
       await login(email, password);
       navigate('/dashboard');
-    } catch (error) {
+    } catch (_error) {
       // Error is already set in useAuth hook
     }
   };

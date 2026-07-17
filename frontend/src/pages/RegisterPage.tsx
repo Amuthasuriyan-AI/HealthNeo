@@ -43,7 +43,7 @@ export const RegisterPage: React.FC = () => {
     try {
       await register(formData);
       navigate('/dashboard');
-    } catch (error) {
+    } catch (_error) {
       // Error is already set in useAuth hook
     }
   };

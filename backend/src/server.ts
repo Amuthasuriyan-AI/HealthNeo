@@ -1,4 +1,5 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
+import process from 'node:process';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -70,8 +71,8 @@ app.use(notFoundMiddleware);
 /**
  * Error Handling Middleware
  */
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  ErrorHandler.handle(error, req, res, next);
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  ErrorHandler.handle(err, _req, res, _next);
 });
 
 /**
@@ -105,8 +106,8 @@ const startServer = async (): Promise<void> => {
 
     process.on('SIGTERM', gracefulShutdown);
     process.on('SIGINT', gracefulShutdown);
-  } catch (error) {
-    console.error('Failed to start server:', error);
+  } catch (_error) {
+    console.error('Failed to start server:', _error);
     process.exit(1);
   }
 };

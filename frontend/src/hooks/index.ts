@@ -26,27 +26,29 @@ export const useAuth = () => {
       const response = await apiService.login(email, password);
       authStore.login(response.data.data);
       return response.data.data;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as Record<string, unknown>;
       const message =
-        error.response?.data?.message || 'Login failed';
-      authStore.setError(message);
-      throw error;
+        (error.response as Record<string, unknown>)?.data?.message || 'Login failed';
+      authStore.setError(message as string);
+      throw err;
     } finally {
       authStore.setLoading(false);
     }
   };
 
-  const register = async (data: any) => {
+  const register = async (data: Record<string, unknown>) => {
     try {
       authStore.setLoading(true);
       const response = await apiService.register(data);
       authStore.login(response.data.data);
       return response.data.data;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as Record<string, unknown>;
       const message =
-        error.response?.data?.message || 'Registration failed';
-      authStore.setError(message);
-      throw error;
+        (error.response as Record<string, unknown>)?.data?.message || 'Registration failed';
+      authStore.setError(message as string);
+      throw err;
     } finally {
       authStore.setLoading(false);
     }
@@ -56,18 +58,19 @@ export const useAuth = () => {
     authStore.logout();
   };
 
-  const updateProfile = async (data: any) => {
+  const updateProfile = async (data: Record<string, unknown>) => {
     try {
       authStore.setLoading(true);
       const response = await apiService.updateProfile(data);
-      authStore.setUser(response.data.data);
+      authStore.setUser(response.data.data as User);
       localStorage.setItem('user', JSON.stringify(response.data.data));
       return response.data.data;
-    } catch (error: any) {
+    } catch (err: unknown) {
+      const error = err as Record<string, unknown>;
       const message =
-        error.response?.data?.message || 'Update failed';
-      authStore.setError(message);
-      throw error;
+        (error.response as Record<string, unknown>)?.data?.message || 'Update failed';
+      authStore.setError(message as string);
+      throw err;
     } finally {
       authStore.setLoading(false);
     }
@@ -92,9 +95,9 @@ export const useAuth = () => {
  * useFetch Hook
  * Generic hook for fetching data
  */
-export const useFetch = <T = any,>(
-  fetchFn: () => Promise<any>,
-  dependencies: any[] = []
+export const useFetch = <T = unknown,>(
+  fetchFn: () => Promise<unknown>,
+  dependencies: unknown[] = []
 ) => {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
@@ -105,9 +108,11 @@ export const useFetch = <T = any,>(
       setLoading(true);
       setError(null);
       const response = await fetchFn();
-      setData(response.data?.data || response.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred');
+      const responseData = response as Record<string, unknown>;
+      setData((responseData.data as T) || (response as T));
+    } catch (err: unknown) {
+      const error = err as Record<string, unknown>;
+      setError((error.response as Record<string, unknown>)?.data?.message as string || 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -129,8 +134,8 @@ export const useLocalStorage = <T,>(key: string, initialValue: T) => {
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error(error);
+    } catch (_error) {
+      console.error(_error);
       return initialValue;
     }
   });
@@ -141,8 +146,8 @@ export const useLocalStorage = <T,>(key: string, initialValue: T) => {
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
-    } catch (error) {
-      console.error(error);
+    } catch (_error) {
+      console.error(_error);
     }
   };
 

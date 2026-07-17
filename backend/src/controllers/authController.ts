@@ -70,10 +70,11 @@ export class AuthController {
       };
 
       res.status(201).json(response);
-    } catch (error) {
+    } catch (_error) {
+      const err = _error as Error;
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Registration failed',
+        message: err.message || 'Registration failed',
         statusCode: 500,
       });
     }
@@ -145,10 +146,11 @@ export class AuthController {
       };
 
       res.status(200).json(response);
-    } catch (error) {
+    } catch (_error) {
+      const err = _error as Error;
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Login failed',
+        message: err.message || 'Login failed',
         statusCode: 500,
       });
     }
@@ -186,10 +188,11 @@ export class AuthController {
       };
 
       res.status(200).json(response);
-    } catch (error) {
+    } catch (_error) {
+      const err = _error as Error;
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to get profile',
+        message: err.message || 'Failed to get profile',
         statusCode: 500,
       });
     }
@@ -235,10 +238,11 @@ export class AuthController {
       };
 
       res.status(200).json(response);
-    } catch (error) {
+    } catch (_error) {
+      const err = _error as Error;
       res.status(500).json({
         success: false,
-        message: error instanceof Error ? error.message : 'Failed to update profile',
+        message: err.message || 'Failed to update profile',
         statusCode: 500,
       });
     }
@@ -276,7 +280,7 @@ export class AuthController {
       };
 
       res.status(200).json(response);
-    } catch (error) {
+    } catch (_error) {
       res.status(401).json({
         success: false,
         message: 'Invalid refresh token',

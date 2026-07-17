@@ -12,6 +12,12 @@ export interface AuthRequest extends Request {
   email?: string;
 }
 
+interface JWTPayload {
+  userId: string;
+  role: string;
+  email: string;
+}
+
 /**
  * Authentication Middleware
  * Verifies JWT token and attaches user info to request
@@ -24,13 +30,13 @@ export const authMiddleware = (
   try {
     const token =
       req.headers.authorization?.split('Bearer ')[1] ||
-      req.cookies?.token;
+      (req.cookies as Record<string, unknown>)?.token;
 
     if (!token) {
       throw new AppError('No authentication token provided', 401);
     }
 
-    const decoded = jwt.verify(token, config.jwt.secret) as any;
+    const decoded = jwt.verify(token as string, config.jwt.secret) as JWTPayload;
     req.userId = decoded.userId;
     req.userRole = decoded.role;
     req.email = decoded.email;
@@ -88,17 +94,17 @@ export const optionalAuthMiddleware = (
   try {
     const token =
       req.headers.authorization?.split('Bearer ')[1] ||
-      req.cookies?.token;
+      (req.cookies as Record<string, unknown>)?.token;
 
     if (token) {
-      const decoded = jwt.verify(token, config.jwt.secret) as any;
+      const decoded = jwt.verify(token as string, config.jwt.secret) as JWTPayload;
       req.userId = decoded.userId;
       req.userRole = decoded.role;
       req.email = decoded.email;
     }
 
     next();
-  } catch (error) {
+  } catch (_error) {
     // Continue without authentication
     next();
   }

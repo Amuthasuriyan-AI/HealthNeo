@@ -10,10 +10,10 @@ export class ErrorHandler {
    * Handle errors and send appropriate response
    */
   static handle(
-    error: any,
-    req: Request,
+    error: Error & { statusCode?: number; details?: unknown },
+    _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
   ): void {
     const statusCode = error.statusCode || 500;
     const message = error.message || 'Internal server error';
@@ -38,7 +38,7 @@ export class ErrorHandler {
  * Wraps async route handlers to catch errors
  */
 export const asyncHandler = (
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
@@ -51,7 +51,7 @@ export const asyncHandler = (
 export const notFoundMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
   const errorResponse: IApiResponse = {
     success: false,
